@@ -1,11 +1,21 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { testRouter } from './test';
+import { authRouter } from './auth/auth.route';
+
+interface Route {
+   path: string;
+   router: Router;
+}
 
 const router = express.Router();
-const routes = [
+const routes: Route[] = [
    {
       path: '/test',
       router: testRouter,
+   },
+   {
+      path: '/auth',
+      router: authRouter,
    },
 ];
 

@@ -1,11 +1,14 @@
 import 'dotenv/config';
 
-import express, { NextFunction } from 'express';
+import express from 'express';
 import cors from 'cors';
 import session from 'cookie-session';
 import { config } from './config/app.config';
 import { v1Router } from './routes/v1';
 import { errorHandler } from './middlewares/error.middleware';
+
+import './config/passport.config';
+import passport from 'passport';
 
 const app = express();
 
@@ -28,6 +31,9 @@ app.use(
       sameSite: 'lax',
    })
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // mount routes
 app.use(`${config.BASE_PATH}/v1`, v1Router);
