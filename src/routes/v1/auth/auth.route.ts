@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import { config } from '../../../config/app.config';
 import {
-   googleLoginCallback,
+   googleLoginCallbackController,
    registerController,
 } from '../../../controllers/v1/auth/auth.controller';
 import { registerSchema } from '../../../validation/auth.validation';
@@ -22,7 +22,7 @@ router.get(
 router.get(
    '/google/callback',
    passport.authenticate('google', { failureRedirect: failureCallback }),
-   googleLoginCallback
+   googleLoginCallbackController
 );
 
 export { router as authRouter };

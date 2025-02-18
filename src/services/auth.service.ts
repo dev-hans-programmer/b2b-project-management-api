@@ -3,10 +3,13 @@ import UserModel from '../models/user.model';
 import AccountModel from '../models/account.model';
 import WorkspaceModel from '../models/workspace.model';
 import RoleModel from '../models/role-permission.model';
-import { RoleEnum } from '../enums/role.enum';
-import { NotFoundException } from '../utils/app-error';
 import MemberModel from '../models/member.model';
+
+import { RoleEnum } from '../enums/role.enum';
+import { BadRequestException, NotFoundException } from '../utils/app-error';
 import { LoginOrCreateAccount } from '../@types/auth';
+import { RegisterPayload } from '../validation/auth.validation';
+import { ProviderEnum } from '../enums/account-provider.enum';
 
 export const loginOrCreateAccountService = async (
    payload: LoginOrCreateAccount
@@ -65,6 +68,70 @@ export const loginOrCreateAccountService = async (
 
       await session.commitTransaction();
       return user;
+   } catch (err) {
+      await session.abortTransaction();
+      throw err;
+   } finally {
+      session.endSession();
+   }
+};
+
+export const registerService = async (payload: RegisterPayload) => {
+   const { name, email, password } = payload;
+
+   const session = await mongoose.startSession();
+
+   try {
+      session.startTransaction();
+      const isExist = await UserModel.findOne({ email }).session(session);
+
+      if (isExist) throw new BadRequestException('User already exists');
+
+      const user = new UserModel({
+         name,
+         email,
+         password,
+      });
+
+      await user.save({ session });
+
+      const account = new AccountModel({
+         userId: user._id,
+         provider: ProviderEnum.EMAIL,
+         providerId: email,
+      });
+
+      await account.save({ session });
+
+      const workspace = new WorkspaceModel({
+         name: 'My workspace',
+         description: `Wokspace for ${user.name}`,
+         owner: user._id,
+      });
+
+      await workspace.save({ session });
+
+      const ownerRole = await RoleModel.findOne({
+         name: RoleEnum.OWNER,
+      }).session(session);
+
+      if (!ownerRole) throw new NotFoundException('Owner role not found');
+
+      const member = new MemberModel({
+         userId: user._id,
+         workspaceId: workspace._id,
+         role: ownerRole._id,
+      });
+
+      await member.save({ session });
+
+      user.currentWorkspace = workspace._id as mongoose.Types.ObjectId;
+
+      await user.save({ session });
+
+      await session.commitTransaction();
+
+      return { userId: user.id };
    } catch (err) {
       await session.abortTransaction();
       throw err;

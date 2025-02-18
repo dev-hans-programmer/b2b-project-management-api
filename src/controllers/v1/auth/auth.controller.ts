@@ -4,7 +4,7 @@ import { config } from '../../../config/app.config';
 import { UserDocument } from '../../../models/user.model';
 import { RegisterPayload } from '../../../validation/auth.validation';
 
-export const googleLoginCallback = asyncHandler(async (req, res) => {
+export const googleLoginCallbackController = asyncHandler(async (req, res) => {
    const currentWorkspace = (req.user as UserDocument)?.currentWorkspace;
 
    if (!currentWorkspace)
