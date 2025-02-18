@@ -1,7 +1,7 @@
 import UserModel from '../models/user.model';
 import { NotFoundException } from '../utils/app-error';
 
-export const fetchCurrentUser = async (userId: string) => {
+export const fetchCurrentUserService = async (userId: string) => {
    const user = await UserModel.findById(userId)
       .populate('currentWorkspace')
       .select('-password');

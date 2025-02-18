@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { AppError } from '../utils/app-error';
+import { AppError, BadRequestException } from '../utils/app-error';
 import { config } from '../config/app.config';
 import { HTTPSTATUS } from '../config/http.config';
+
+const handleCastError = (err: any) =>
+   new BadRequestException(`Invalid ${err.path}:${err.value}`);
 
 const sendDevError = (err: AppError, res: Response) => {
    res.status(err.statusCode).json({
@@ -36,6 +39,8 @@ export const errorHandler = (
    res: Response,
    _next: NextFunction
 ) => {
+   if (err.name === 'CastError') err = handleCastError(err);
+
    if (err instanceof AppError) {
       if (config.NODE_ENV === 'development') {
          sendDevError(err, res);

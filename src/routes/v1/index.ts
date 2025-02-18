@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import { testRouter } from './test';
 import { authRouter } from './auth/auth.route';
 import { userRouter } from './user/user.route';
+import { workspaceRouter } from './workspace/workspace.route';
 
 interface Route {
    path: string;
@@ -21,6 +22,10 @@ const routes: Route[] = [
    {
       path: '/user',
       router: userRouter,
+   },
+   {
+      path: '/workspace',
+      router: workspaceRouter,
    },
 ];
 
