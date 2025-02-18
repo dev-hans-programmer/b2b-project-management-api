@@ -6,7 +6,11 @@ const emailSchema = z
    .email('Invalid email address')
    .min(1)
    .max(200);
-const passwordSchema = z.string().trim().min(4).default('1234');
+const passwordSchema = z
+   .string()
+   .trim()
+   .min(4, 'Password must be of min 4 characters')
+   .default('1234');
 
 export const registerSchema = z.object({
    name: z

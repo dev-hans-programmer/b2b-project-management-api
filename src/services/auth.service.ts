@@ -6,8 +6,12 @@ import RoleModel from '../models/role-permission.model';
 import MemberModel from '../models/member.model';
 
 import { RoleEnum } from '../enums/role.enum';
-import { BadRequestException, NotFoundException } from '../utils/app-error';
-import { LoginOrCreateAccount } from '../@types/auth';
+import {
+   BadRequestException,
+   NotFoundException,
+   UnauthorizedException,
+} from '../utils/app-error';
+import { LoginOrCreateAccount, LoginPayload } from '../@types/auth';
 import { RegisterPayload } from '../validation/auth.validation';
 import { ProviderEnum } from '../enums/account-provider.enum';
 
@@ -131,11 +135,33 @@ export const registerService = async (payload: RegisterPayload) => {
 
       await session.commitTransaction();
 
-      return { userId: user.id };
+      return { userId: user._id };
    } catch (err) {
       await session.abortTransaction();
       throw err;
    } finally {
       session.endSession();
    }
+};
+
+export const verifyUserService = async ({
+   email,
+   password,
+   provider = ProviderEnum.EMAIL,
+}: LoginPayload) => {
+   const account = await AccountModel.findOne({
+      provider,
+      providerId: email,
+   });
+   if (!account) throw new NotFoundException('Account does not exist');
+
+   const user = await UserModel.findOne({ email });
+
+   if (!user) throw new NotFoundException('User does not exist');
+
+   const isMatch = await user.comparePassword(password);
+
+   if (!isMatch) throw new UnauthorizedException('Unauthorized');
+
+   return user.omitPassword();
 };

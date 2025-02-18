@@ -9,6 +9,7 @@ import { errorHandler } from './middlewares/error.middleware';
 
 import './config/passport.config';
 import passport from 'passport';
+import { NotFoundException } from './utils/app-error';
 
 const app = express();
 
@@ -37,6 +38,14 @@ app.use(passport.session());
 
 // mount routes
 app.use(`${config.BASE_PATH}/v1`, v1Router);
+
+app.all('*', (req, _res, next) =>
+   next(
+      new NotFoundException(
+         `Can't find route ${req.originalUrl} on the server global`
+      )
+   )
+);
 
 app.use(errorHandler);
 
