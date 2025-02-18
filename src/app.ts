@@ -10,6 +10,15 @@ import { errorHandler } from './middlewares/error.middleware';
 import './config/passport.config';
 import passport from 'passport';
 import { NotFoundException } from './utils/app-error';
+import { UserDocument } from './models/user.model';
+
+declare global {
+   namespace Express {
+      interface User extends UserDocument {
+         _id?: any;
+      }
+   }
+}
 
 const app = express();
 

@@ -3,13 +3,12 @@ import passport from 'passport';
 import asyncHandler from '../../../middlewares/async-handler.middleware';
 
 import { config } from '../../../config/app.config';
-import { UserDocument } from '../../../models/user.model';
 import { registerService } from '../../../services/auth.service';
 import { HTTPSTATUS } from '../../../config/http.config';
 import { UnauthorizedException } from '../../../utils/app-error';
 
 export const googleLoginCallbackController = asyncHandler(async (req, res) => {
-   const currentWorkspace = (req.user as UserDocument)?.currentWorkspace;
+   const currentWorkspace = req.user?.currentWorkspace;
 
    if (!currentWorkspace)
       return res.redirect(
