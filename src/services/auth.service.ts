@@ -14,6 +14,7 @@ import {
 import { LoginOrCreateAccount, LoginPayload } from '../@types/auth';
 import { RegisterPayload } from '../validation/auth.validation';
 import { ProviderEnum } from '../enums/account-provider.enum';
+import { logger } from '../config/logger.config';
 
 export const loginOrCreateAccountService = async (
    payload: LoginOrCreateAccount
@@ -21,7 +22,7 @@ export const loginOrCreateAccountService = async (
    const { name, profilePicture, provider, providerId, email } = payload;
    const session = await mongoose.startSession();
    session.startTransaction();
-   console.log('Transaction started');
+   logger.info('Transaction started');
 
    try {
       let user = await UserModel.findOne({ email }).session(session);
@@ -71,6 +72,7 @@ export const loginOrCreateAccountService = async (
       }
 
       await session.commitTransaction();
+      logger.info('Transaction completed');
       return user;
    } catch (err) {
       await session.abortTransaction();
