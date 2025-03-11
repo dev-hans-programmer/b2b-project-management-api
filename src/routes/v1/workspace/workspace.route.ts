@@ -6,6 +6,7 @@ import {
    createWorkspaceController,
    getAllWorkspacesOfUserController,
    getWorkspaceByIdController,
+   getWorkspaceMembersController,
 } from '../../../controllers/v1/workspace/workspace.controller';
 import { isAuthenticated } from '../../../middlewares/auth.middleware';
 
@@ -18,8 +19,9 @@ router
    .post(validateInput(createWorkspaceSchema), createWorkspaceController);
 
 router.route('/:id').get(getWorkspaceByIdController);
+router.route('/:id/members').get(getWorkspaceMembersController);
 
 // Get all workspaces of the current user
-router.get('/user', getAllWorkspacesOfUserController);
+router.get('/user/current', getAllWorkspacesOfUserController);
 
 export { router as workspaceRouter };
