@@ -2,40 +2,43 @@ import { NextFunction, Request, Response } from 'express';
 import { AppError, BadRequestException } from '../utils/app-error';
 import { config } from '../config/app.config';
 import { HTTPSTATUS } from '../config/http.config';
+import { sendResponse } from '../utils/common';
+import { logger } from '../config/logger.config';
 
 const handleCastError = (err: any) =>
    new BadRequestException(`Invalid ${err.path}:${err.value}`);
 
 const sendDevError = (err: AppError, res: Response) => {
-   res.status(err.statusCode).json({
-      status: err.status,
+   sendResponse(res, err.status, {
       message: err.message,
-      stack: err.stack,
       errorCode: err.errorCode,
       statusCode: err.statusCode,
+      stack: err.stack,
    });
+   // res.status(err.statusCode).json({
+   //    status: err.status,
+   //    message: err.message,
+   //    stack: err.stack,
+   // errorCode: err.errorCode,
+   // statusCode: err.statusCode,
+   // });
 };
 
 const sendProdError = (err: AppError, res: Response) => {
    if (err.operational) {
-      return res.status(err.statusCode).json({
-         status: err.status,
+      return sendResponse(res, err.status, {
          message: err.message,
          errorCode: err.errorCode,
          statusCode: err.statusCode,
       });
    }
-   res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong',
-      errorCode: err.errorCode,
-      statusCode: err.statusCode,
-   });
+   logger.error(JSON.stringify(err));
+   sendResponse(res, 'error', null);
 };
 
 export const errorHandler = (
    err: Error,
-   req: Request,
+   _req: Request,
    res: Response,
    _next: NextFunction
 ) => {
@@ -48,16 +51,12 @@ export const errorHandler = (
          sendProdError(err, res);
       }
    } else if (err instanceof SyntaxError) {
-      res.status(HTTPSTATUS.BAD_REQUEST).json({
-         status: 'fail',
+      sendResponse(res, 'fail', {
          message: 'Invalid JSON payload passed.',
          statusCode: HTTPSTATUS.BAD_REQUEST,
       });
    } else {
-      console.log(err);
-      res.status(500).json({
-         status: 'error',
-         message: 'Something went wrong',
-      });
+      logger.error(JSON.stringify(err));
+      sendResponse(res, 'error', null);
    }
 };

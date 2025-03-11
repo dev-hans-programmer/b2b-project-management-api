@@ -8,6 +8,7 @@ import {
    getWorkspaceByIdService,
    getWorkspaceMembersService,
 } from '../../../services/workspace.service';
+import { sendResponse } from '../../../utils/common';
 import { roleGuard } from '../../../utils/role-guard';
 
 export const createWorkspaceController = asyncHandler(async (req, res) => {
@@ -15,17 +16,20 @@ export const createWorkspaceController = asyncHandler(async (req, res) => {
 
    const { workspace } = await createWorkspaceService(userId, req.body);
 
-   res.status(HTTPSTATUS.CREATED).json({
-      message: 'Workspace successfully created',
-      workspace,
-   });
+   sendResponse(
+      res,
+      'success',
+      { workspace },
+      'Workspace successfully created',
+      HTTPSTATUS.CREATED
+   );
 });
 
 export const getAllWorkspacesOfUserController = asyncHandler(
    async (req, res) => {
       const { workspaces } = await fetchWorkspacesOfUserService(req.user?._id);
 
-      res.json({ workspaces });
+      sendResponse(res, 'success', { workspaces });
    }
 );
 
@@ -37,7 +41,7 @@ export const getWorkspaceByIdController = asyncHandler(async (req, res) => {
 
    const { workspace } = await getWorkspaceByIdService(req.params.id);
 
-   res.json({ workspace });
+   sendResponse(res, 'success', { workspace });
 });
 
 export const getWorkspaceMembersController = asyncHandler(async (req, res) => {
@@ -50,9 +54,13 @@ export const getWorkspaceMembersController = asyncHandler(async (req, res) => {
 
    const { members, roles } = await getWorkspaceMembersService(workspaceId);
 
-   return res.json({
-      message: 'Workspace members retrieved successfully',
-      members,
-      roles,
-   });
+   return sendResponse(
+      res,
+      'success',
+      {
+         members,
+         roles,
+      },
+      'Workspace members retrieved successfully'
+   );
 });

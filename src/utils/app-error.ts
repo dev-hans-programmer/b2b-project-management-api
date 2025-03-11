@@ -4,7 +4,7 @@ import { ErrorCodeEnum, ErrorCodeEnumType } from '../enums/error-code.enum';
 export class AppError extends Error {
    public readonly statusCode: HttpStatusCodeType;
    public readonly operational: boolean;
-   public readonly status: string;
+   public readonly status: 'fail' | 'error';
    public readonly errorCode?: ErrorCodeEnumType;
 
    constructor(
