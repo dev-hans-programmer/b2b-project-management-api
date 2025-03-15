@@ -102,3 +102,7 @@ export const getWorkspaceMembersService = async (workspaceId: string) => {
 
    return { members, roles };
 };
+
+export const getWorkspaceAnalyticsService = async (workspaceId?: string) => {
+   throw new NotFoundException('Not implemented');
+};

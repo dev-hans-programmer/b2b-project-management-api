@@ -9,12 +9,18 @@ const handleCastError = (err: any) =>
    new BadRequestException(`Invalid ${err.path}:${err.value}`);
 
 const sendDevError = (err: AppError, res: Response) => {
-   sendResponse(res, err.status, {
-      message: err.message,
-      errorCode: err.errorCode,
-      statusCode: err.statusCode,
-      stack: err.stack,
-   });
+   sendResponse(
+      res,
+      err.status,
+      {
+         message: err.message,
+         errorCode: err.errorCode,
+         statusCode: err.statusCode,
+         stack: err.stack,
+      },
+      err.message,
+      err.statusCode
+   );
    // res.status(err.statusCode).json({
    //    status: err.status,
    //    message: err.message,
@@ -26,11 +32,17 @@ const sendDevError = (err: AppError, res: Response) => {
 
 const sendProdError = (err: AppError, res: Response) => {
    if (err.operational) {
-      return sendResponse(res, err.status, {
-         message: err.message,
-         errorCode: err.errorCode,
-         statusCode: err.statusCode,
-      });
+      return sendResponse(
+         res,
+         err.status,
+         {
+            message: err.message,
+            errorCode: err.errorCode,
+            statusCode: err.statusCode,
+         },
+         err.message,
+         err.statusCode
+      );
    }
    logger.error(JSON.stringify(err));
    sendResponse(res, 'error', null);

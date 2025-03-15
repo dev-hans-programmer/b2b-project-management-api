@@ -5,6 +5,7 @@ import { createWorkspaceSchema } from '../../../validation/workspace.validation'
 import {
    createWorkspaceController,
    getAllWorkspacesOfUserController,
+   getWorkspaceAnalyticsController,
    getWorkspaceByIdController,
    getWorkspaceMembersController,
 } from '../../../controllers/v1/workspace/workspace.controller';
@@ -17,11 +18,11 @@ router.use(isAuthenticated);
 router
    .route('/')
    .post(validateInput(createWorkspaceSchema), createWorkspaceController);
+// Get all workspaces of the current user
+router.get('/user/current', getAllWorkspacesOfUserController);
 
 router.route('/:id').get(getWorkspaceByIdController);
 router.route('/:id/members').get(getWorkspaceMembersController);
-
-// Get all workspaces of the current user
-router.get('/user/current', getAllWorkspacesOfUserController);
+router.get('/:id/analytics', getWorkspaceAnalyticsController);
 
 export { router as workspaceRouter };

@@ -20,7 +20,13 @@ export const sendResponse = (
    return response
       .status(
          statusCode ||
-            (status === 'success' ? 200 : status === 'fail' ? 400 : 500)
+            (status === 'success'
+               ? 200
+               : statusCode
+               ? statusCode
+               : status === 'fail'
+               ? 400
+               : 500)
       )
       .json(payload);
 };

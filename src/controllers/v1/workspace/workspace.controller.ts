@@ -5,6 +5,7 @@ import { getMemberRoleInWorkspaceService } from '../../../services/member.servic
 import {
    createWorkspaceService,
    fetchWorkspacesOfUserService,
+   getWorkspaceAnalyticsService,
    getWorkspaceByIdService,
    getWorkspaceMembersService,
 } from '../../../services/workspace.service';
@@ -64,3 +65,10 @@ export const getWorkspaceMembersController = asyncHandler(async (req, res) => {
       'Workspace members retrieved successfully'
    );
 });
+
+export const getWorkspaceAnalyticsController = asyncHandler(
+   async (req, res) => {
+      await getWorkspaceAnalyticsService();
+      return sendResponse(res, 'success', {}, 'Workspace analytics retrieved');
+   }
+);
