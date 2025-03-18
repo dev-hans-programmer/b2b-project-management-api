@@ -18,6 +18,7 @@ const workspaceSchema = new mongoose.Schema<WorkspaceDocument>(
          type: String,
          required: [true, 'Name is required'],
          trim: true,
+         unique: true,
       },
       description: {
          type: String,

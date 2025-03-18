@@ -49,13 +49,13 @@ export const createWorkspaceService = async (
 
       await user.save({ session });
 
-      session.commitTransaction();
+      await session.commitTransaction();
 
       return {
          workspace,
       };
    } catch (err) {
-      session.abortTransaction();
+      await session.abortTransaction();
       throw err;
    } finally {
       session.endSession();

@@ -5,8 +5,19 @@ import { HTTPSTATUS } from '../config/http.config';
 import { sendResponse } from '../utils/common';
 import { logger } from '../config/logger.config';
 
+interface CustomError extends Error {
+   code?: number;
+}
+
 const handleCastError = (err: any) =>
    new BadRequestException(`Invalid ${err.path}:${err.value}`);
+
+const handleDuplicateError = (err: any) => {
+   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+   return new BadRequestException(
+      `Duplicate field value: ${value}. Please use another value!`
+   );
+};
 
 const sendDevError = (err: AppError, res: Response) => {
    sendResponse(
@@ -49,12 +60,13 @@ const sendProdError = (err: AppError, res: Response) => {
 };
 
 export const errorHandler = (
-   err: Error,
+   err: CustomError,
    _req: Request,
    res: Response,
    _next: NextFunction
 ) => {
    if (err.name === 'CastError') err = handleCastError(err);
+   if (err.code === 11000) err = handleDuplicateError(err);
 
    if (err instanceof AppError) {
       if (config.NODE_ENV === 'development') {
