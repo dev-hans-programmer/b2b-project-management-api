@@ -1,3 +1,4 @@
+import { ErrorCodeEnum } from '../enums/error-code.enum';
 import MemberModel from '../models/member.model';
 import { RoleDocument } from '../models/role-permission.model';
 import WorkspaceModel from '../models/workspace.model';
@@ -16,7 +17,10 @@ export const getMemberRoleInWorkspaceService = async (
    }>('role');
 
    if (!member) {
-      throw new UnauthorizedException('You are not a member of this workspace');
+      throw new UnauthorizedException(
+         'You are not a member of this workspace',
+         ErrorCodeEnum.ACCESS_UNAUTHORIZED
+      );
    }
 
    return { role: member.role.name };

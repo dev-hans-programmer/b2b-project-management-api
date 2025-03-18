@@ -54,11 +54,11 @@ export class BadRequestException extends AppError {
 }
 
 export class UnauthorizedException extends AppError {
-   constructor(message = 'Unauthorized') {
+   constructor(message = 'Unauthorized', errorCode?: ErrorCodeEnumType) {
       super(
          message,
          HTTPSTATUS.UNAUTHORIZED,
-         ErrorCodeEnum.AUTH_UNAUTHORIZED_ACCESS
+         errorCode || ErrorCodeEnum.AUTH_UNAUTHORIZED_ACCESS
       );
    }
 }
