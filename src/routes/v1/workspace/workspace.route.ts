@@ -7,6 +7,7 @@ import {
 } from '../../../validation/workspace.validation';
 import {
    createWorkspaceController,
+   deleteWorkspaceByIdController,
    getAllWorkspacesOfUserController,
    getWorkspaceAnalyticsController,
    getWorkspaceByIdController,
@@ -28,7 +29,9 @@ router.get('/user/current', getAllWorkspacesOfUserController);
 router
    .route('/:id')
    .get(getWorkspaceByIdController)
-   .put(validateInput(updateWorkspaceSchema), updateWorkspaceByIdController);
+   .put(validateInput(updateWorkspaceSchema), updateWorkspaceByIdController)
+   .delete(deleteWorkspaceByIdController);
+
 router.route('/:id/members').get(getWorkspaceMembersController);
 router.get('/:id/analytics', getWorkspaceAnalyticsController);
 

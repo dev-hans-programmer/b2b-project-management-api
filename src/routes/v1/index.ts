@@ -20,11 +20,11 @@ const routes: Route[] = [
       router: authRouter,
    },
    {
-      path: '/user',
+      path: '/users',
       router: userRouter,
    },
    {
-      path: '/workspace',
+      path: '/workspaces',
       router: workspaceRouter,
    },
 ];

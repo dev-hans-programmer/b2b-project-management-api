@@ -4,6 +4,7 @@ import asyncHandler from '../../../middlewares/async-handler.middleware';
 import { getMemberRoleInWorkspaceService } from '../../../services/member.service';
 import {
    createWorkspaceService,
+   deleteWorkspaceByIdService,
    fetchWorkspacesOfUserService,
    getWorkspaceAnalyticsService,
    getWorkspaceByIdService,
@@ -64,6 +65,22 @@ export const updateWorkspaceByIdController = asyncHandler(async (req, res) => {
    );
 
    sendResponse(res, 'success', { workspace });
+});
+
+export const deleteWorkspaceByIdController = asyncHandler(async (req, res) => {
+   const workspaceId = req.params.id;
+   const userId = req.user?._id;
+
+   const { role } = await getMemberRoleInWorkspaceService(userId, workspaceId);
+
+   roleGuard(role, [PermissionEnum.DELETE_WORKSPACE]);
+
+   const { currentWorkspace } = await deleteWorkspaceByIdService(
+      workspaceId,
+      userId
+   );
+
+   sendResponse(res, 'success', { currentWorkspace });
 });
 
 export const getWorkspaceMembersController = asyncHandler(async (req, res) => {

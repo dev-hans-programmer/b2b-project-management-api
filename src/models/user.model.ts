@@ -10,7 +10,7 @@ export interface UserDocument extends Document {
    lastLogin: Date | null;
    createdAt: Date;
    updatedAt: Date;
-   currentWorkspace: mongoose.Types.ObjectId;
+   currentWorkspace: mongoose.Types.ObjectId | null;
    comparePassword(password: string): Promise<boolean>;
    omitPassword(): Omit<UserDocument, 'password'>;
 }
