@@ -8,9 +8,11 @@ import {
    getWorkspaceAnalyticsService,
    getWorkspaceByIdService,
    getWorkspaceMembersService,
+   updateWorkspaceByIdService,
 } from '../../../services/workspace.service';
 import { sendResponse } from '../../../utils/common';
 import { roleGuard } from '../../../utils/role-guard';
+import { WorkspaceUpdationPayload } from '../../../validation/workspace.validation';
 
 export const createWorkspaceController = asyncHandler(async (req, res) => {
    const userId = req.user?._id;
@@ -41,6 +43,25 @@ export const getWorkspaceByIdController = asyncHandler(async (req, res) => {
    await getMemberRoleInWorkspaceService(userId, workspaceId);
 
    const { workspace } = await getWorkspaceByIdService(req.params.id);
+
+   sendResponse(res, 'success', { workspace });
+});
+
+export const updateWorkspaceByIdController = asyncHandler(async (req, res) => {
+   const workspaceId = req.params.id;
+   const userId = req.user?._id;
+
+   const { name, description } = req.body as WorkspaceUpdationPayload;
+
+   const { role } = await getMemberRoleInWorkspaceService(userId, workspaceId);
+
+   roleGuard(role, [PermissionEnum.EDIT_WORKSPACE]);
+
+   const { workspace } = await updateWorkspaceByIdService(
+      workspaceId,
+      name,
+      description
+   );
 
    sendResponse(res, 'success', { workspace });
 });

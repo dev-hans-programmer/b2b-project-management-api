@@ -87,6 +87,31 @@ export const getWorkspaceByIdService = async (workspaceId: string) => {
    return { workspace: workspaceWithMembers };
 };
 
+export const updateWorkspaceByIdService = async (
+   workspaceId: string,
+   name?: string,
+   description?: string
+) => {
+   const workspace = await WorkspaceModel.findByIdAndUpdate(
+      workspaceId,
+      {
+         $set: {
+            ...(name && { name }),
+            ...(description && { description }),
+         },
+      },
+      { new: true }
+   );
+
+   if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+   }
+
+   return {
+      workspace,
+   };
+};
+
 export const getWorkspaceMembersService = async (workspaceId: string) => {
    // Fetch all members of the workspace
 
