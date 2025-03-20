@@ -3,6 +3,7 @@ import { testRouter } from './test';
 import { authRouter } from './auth/auth.route';
 import { userRouter } from './user/user.route';
 import { workspaceRouter } from './workspace/workspace.route';
+import { memberRouter } from './member/member.routes';
 
 interface Route {
    path: string;
@@ -26,6 +27,10 @@ const routes: Route[] = [
    {
       path: '/workspaces',
       router: workspaceRouter,
+   },
+   {
+      path: '/members',
+      router: memberRouter,
    },
 ];
 
