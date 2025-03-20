@@ -106,7 +106,12 @@ export const getWorkspaceMembersController = asyncHandler(async (req, res) => {
 
 export const getWorkspaceAnalyticsController = asyncHandler(
    async (req, res) => {
-      await getWorkspaceAnalyticsService();
-      return sendResponse(res, 'success', {}, 'Workspace analytics retrieved');
+      const { analytics } = await getWorkspaceAnalyticsService(req.params.id);
+      return sendResponse(
+         res,
+         'success',
+         { analytics },
+         'Workspace analytics retrieved'
+      );
    }
 );

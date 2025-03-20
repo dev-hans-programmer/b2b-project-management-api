@@ -7,6 +7,8 @@ import WorkspaceModel from '../models/workspace.model';
 import { RoleEnum } from '../enums/role.enum';
 import { BadRequestException, NotFoundException } from '../utils/app-error';
 import { WorkspaceCreationPayload } from '../validation/workspace.validation';
+import TaskModel from '../models/task.model';
+import { TaskStatusEnum } from '../enums/task.enum';
 
 export const createWorkspaceService = async (
    userId: string,
@@ -179,6 +181,29 @@ export const getWorkspaceMembersService = async (workspaceId: string) => {
    return { members, roles };
 };
 
-export const getWorkspaceAnalyticsService = async (workspaceId?: string) => {
-   throw new NotFoundException('Not implemented');
+export const getWorkspaceAnalyticsService = async (workspaceId: string) => {
+   const currentDate = new Date();
+
+   const totalTasks = await TaskModel.countDocuments({
+      workspace: workspaceId,
+   });
+
+   const overdueTasks = await TaskModel.countDocuments({
+      workspace: workspaceId,
+      dueDate: { $lt: currentDate },
+      status: { $ne: TaskStatusEnum.DONE },
+   });
+
+   const completedTasks = await TaskModel.countDocuments({
+      workspace: workspaceId,
+      status: TaskStatusEnum.DONE,
+   });
+
+   const analytics = {
+      totalTasks,
+      overdueTasks,
+      completedTasks,
+   };
+
+   return { analytics };
 };
