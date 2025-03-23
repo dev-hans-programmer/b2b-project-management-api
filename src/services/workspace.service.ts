@@ -207,3 +207,41 @@ export const getWorkspaceAnalyticsService = async (workspaceId: string) => {
 
    return { analytics };
 };
+
+export const changeWorkspaceMemberRoleService = async (
+   workspaceId: string,
+   memberId: string,
+   roleId: string
+) => {
+   const session = await mongoose.startSession();
+   session.startTransaction();
+
+   try {
+      // Here workspace and role are read-only operations hence used lean
+      // and no need to use session for these two
+      const [workspace, role, member] = await Promise.all([
+         WorkspaceModel.findById(workspaceId).lean(),
+         RoleModel.findById(roleId).lean(),
+         MemberModel.findOne({ userId: memberId, workspaceId }).session(
+            session
+         ),
+      ]);
+
+      if (!workspace) throw new NotFoundException('Workspace not found');
+      if (!role) throw new NotFoundException('Role not found');
+      if (!member)
+         throw new NotFoundException('Member not found in the workspace');
+
+      member.role = role._id as mongoose.Types.ObjectId;
+
+      await member.save({ session });
+
+      await session.commitTransaction();
+      return { member };
+   } catch (err) {
+      await session.abortTransaction();
+      throw err;
+   } finally {
+      session.endSession();
+   }
+};

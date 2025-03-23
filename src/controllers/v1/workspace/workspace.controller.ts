@@ -3,6 +3,7 @@ import { PermissionEnum } from '../../../enums/role.enum';
 import asyncHandler from '../../../middlewares/async-handler.middleware';
 import { getMemberRoleInWorkspaceService } from '../../../services/member.service';
 import {
+   changeWorkspaceMemberRoleService,
    createWorkspaceService,
    deleteWorkspaceByIdService,
    fetchWorkspacesOfUserService,
@@ -112,6 +113,33 @@ export const getWorkspaceAnalyticsController = asyncHandler(
          'success',
          { analytics },
          'Workspace analytics retrieved'
+      );
+   }
+);
+
+export const changeWorkspaceMemberRoleController = asyncHandler(
+   async (req, res) => {
+      const { id: workspaceId, memberId, roleId } = req.params;
+      const userId = req.user?._id;
+
+      const { role } = await getMemberRoleInWorkspaceService(
+         userId,
+         workspaceId
+      );
+
+      roleGuard(role, [PermissionEnum.CHANGE_MEMBER_ROLE]);
+
+      const { member } = await changeWorkspaceMemberRoleService(
+         workspaceId,
+         memberId,
+         roleId
+      );
+
+      sendResponse(
+         res,
+         'success',
+         { member },
+         'Member role changed successfully'
       );
    }
 );

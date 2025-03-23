@@ -6,6 +6,7 @@ import {
    updateWorkspaceSchema,
 } from '../../../validation/workspace.validation';
 import {
+   changeWorkspaceMemberRoleController,
    createWorkspaceController,
    deleteWorkspaceByIdController,
    getAllWorkspacesOfUserController,
@@ -31,6 +32,11 @@ router
    .get(getWorkspaceByIdController)
    .put(validateInput(updateWorkspaceSchema), updateWorkspaceByIdController)
    .delete(deleteWorkspaceByIdController);
+
+router.put(
+   '/:id/members/:memberId/role/:roleId',
+   changeWorkspaceMemberRoleController
+);
 
 router.route('/:id/members').get(getWorkspaceMembersController);
 router.get('/:id/analytics', getWorkspaceAnalyticsController);
